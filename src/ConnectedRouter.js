@@ -9,24 +9,21 @@ const createConnectedRouter = structure => {
   const { getIn } = structure
 
   /*
-    * ConnectedRouter listens to Next Router events.
-    * When history is changed, it dispatches an action
-    * to update router state in redux store.
-    */
+   * ConnectedRouter listens to Next Router events.
+   * When history is changed, it dispatches an action
+   * to update router state in redux store.
+   */
   class WithConnectedRouter extends React.Component {
-    static contextTypes = {
+    static propTypes = {
+      children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
+      shallowTimeTravel: PropTypes.bool,
+      reducerKey: PropTypes.string,
+      Router: PropTypes.shape(),
       store: PropTypes.shape({
         getState: PropTypes.func.isRequired,
         dispatch: PropTypes.func.isRequired,
         subscribe: PropTypes.func.isRequired
       }).isRequired
-    }
-
-    static propTypes = {
-      children: PropTypes.oneOfType([PropTypes.func, PropTypes.node]),
-      shallowTimeTravel: PropTypes.bool,
-      reducerKey: PropTypes.string,
-      Router: PropTypes.shape()
     }
 
     static defaultProps = {
@@ -35,10 +32,10 @@ const createConnectedRouter = structure => {
       Router: NextRouter
     }
 
-    constructor(props, context) {
+    constructor(props) {
       super(props)
       this.inTimeTravelling = false
-      this.store = context.store
+      this.store = props.store
     }
 
     componentDidMount() {
@@ -64,7 +61,7 @@ const createConnectedRouter = structure => {
         Router.router.events.off('routeChangeCompleteWithAction', this.listenRouteChanges)
       }
     }
-    
+
     enableTimeTravel = () => {
       this._isTimeTravelEnabled = true
     }
